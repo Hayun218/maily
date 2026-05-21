@@ -21,7 +21,7 @@ export default function Dashboard() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 401) {
+        if (res.status === 401 && !data.error?.includes("인증 실패")) {
           window.location.href = "/";
           return;
         }

@@ -35,9 +35,18 @@ export async function GET() {
     return NextResponse.json({ senders, total: raw.length });
   } catch (err) {
     console.error("[scan]", err);
+    const msg = err instanceof Error ? err.message : "";
+    const isAuth =
+      msg.includes("Authentication failed") ||
+      msg.includes("AUTHENTICATIONFAILED") ||
+      msg.includes("Invalid credentials");
     return NextResponse.json(
-      { error: "이메일 스캔 중 오류가 발생했습니다." },
-      { status: 500 }
+      {
+        error: isAuth
+          ? "인증 실패: 이메일 또는 앱 전용 비밀번호를 확인하세요."
+          : "이메일 스캔 중 오류가 발생했습니다.",
+      },
+      { status: isAuth ? 401 : 500 }
     );
   }
 }
